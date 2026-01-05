@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ExcelConvertor": {
+      "commandName": "Project",
+      "commandLineArgs": "-p \"C:\\Daytona\\Doc\\DataTable\\DataTable_Steam\" -o \"C:\\Daytona\\Doc\\DataTable\\DataTable_Steam\" -r 1 -d false"
+    }
+  }
+}
