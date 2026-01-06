@@ -46,7 +46,7 @@ Cloud
 | ------- | -------- | ------ | ------ |
 | usage   | SerialNo | Key    | Value  |
 | Common  | int      | string | double |
-| 1       | Test     | 0      | 주석   |
+|        | 1     |  Test      | 0   |
 
 ### 엑셀 열거형(enum) 작성 규칙
 
