@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 
 namespace ExcelConvertor.CodeGen
@@ -120,17 +121,19 @@ namespace ExcelConvertor.CodeGen
         {
             return type.ToLower() switch
             {
-                "bool" => 1,
-                "byte" => 1,
-                "short" => 2,
-                "ushort" => 2,
-                "int" => 4,
-                "uint" => 4,
-                "float" => 4,
-                "long" => 8,
-                "ulong" => 8,
-                "double" => 8,
-                _ => 4, // 기본값 (참조형 또는 알 수 없는 타입)
+                "bool" => sizeof(bool),
+                "byte" => sizeof(byte),
+                "char" => sizeof(char),
+                "short" => sizeof(short),
+                "ushort" => sizeof(ushort),
+                "int" => sizeof(int),
+                "uint" => sizeof(uint),
+                "long" => sizeof(long),
+                "ulong" => sizeof(ulong),
+                "float" => sizeof(float),
+                "double" => sizeof(double),
+                "decimal" => sizeof(decimal),
+                _ => throw new NotSupportedException($"타입 '{type}'의 크기를 확인할 수 없습니다. 사용자정의 타입이거나 열거형은 이 메서드에 전달되어서는 안 됩니다.")
             };
         }
     }

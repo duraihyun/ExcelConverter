@@ -11,10 +11,14 @@ namespace ExcelConvertor
         [Option('o', Required = true, HelpText = "Output path for the converted files.")]
         public string OutputDir { get; init; } = string.Empty;
 
+        [Option('s', Required = true, HelpText = "Path to the schema directory.")]
+        public string SchemaDir { get; init; } = string.Empty;
+
+        [Option('l', Required = false, HelpText = "Generate read-only schema.")]
+        public bool IsReadOnly { get; init; }
 
         [Option('r', Required = true, HelpText = "Revision number.", Default = 1)]
         public int Revision { get; init;  }
-
 
         [Option('n', Required = false, HelpText = "Row number for field names.", Default = 1)]
         public int NameRowNumber { get; init; } = 1;

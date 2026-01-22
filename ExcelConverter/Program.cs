@@ -118,17 +118,19 @@ namespace ExcelConvertor
             }
 
             #region 스키마 갱신
+            if (opts.IsReadOnly == false)
             {
                 // 엑셀에서 삭제된 테이블은 스키마 파일에 Deprecated 플래그를 설정해야한다.
-                ReconcileDeletedSchemas(schemas, opts.OutputDir);
+                ReconcileDeletedSchemas(schemas, opts.SchemaDir);
 
                 // 변경 사항이 있는 스키마에 대해서만 JSON 생성
                 var updateSchemas = schemas.Where(p => p.Action == ActionType.Create || p.Action == ActionType.Update).ToList();
-                SchemaGenerator.GenerateSchemaJson(updateSchemas, opts.OutputDir, s_serializerOptions);
+                SchemaGenerator.GenerateSchemaJson(updateSchemas, opts.SchemaDir, s_serializerOptions);
             }
             #endregion
 
-            #region 코드 생성        
+            #region 코드 생성
+            if (opts.IsReadOnly == false)
             {
                 var appRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 
@@ -243,9 +245,9 @@ namespace ExcelConvertor
                 if (!schemaGenerator.Init(sheet, opts))
                     continue;
 
-                var schemaPath = Path.Combine(opts.OutputDir, $"{Path.GetFileName(sheet.SheetName)}.Schema.json");
+                var schemaPath = Path.Combine(opts.SchemaDir, $"{Path.GetFileName(sheet.SheetName)}.Schema.json");
 
-                // 엑셀과 같은 위치에 스키마 존재
+                // 스키마 존재 (계약이 존재하는 경우)
                 if (File.Exists(schemaPath) == false)
                 {
                     // 스키마 생성
@@ -254,7 +256,7 @@ namespace ExcelConvertor
                 else
                 {
                     // 갱신인 경우는 diff 필요
-                    results.Add(schemaGenerator.Update(schemaPath, opts.ForceFieldTypeOverwrite));
+                    results.Add(schemaGenerator.Update(schemaPath, opts));
                 }
             }
 
@@ -408,7 +410,7 @@ namespace ExcelConvertor
         /// 삭제된 테이블 스키마 비활성화 플래그 설정
         /// </summary>
         /// <param name="currentRevisionSchemas"></param>
-        /// <param name="originSchemaDir"></param>
+        /// <param name="originSchemaDir">스키마 디렉토리 경로</param>
         private static void ReconcileDeletedSchemas(List<SchemaGenerationResult> currentRevisionSchemas, string originSchemaDir)
         {
             var existingSchemaFiles = Directory.GetFiles(originSchemaDir, "*.Schema.json")

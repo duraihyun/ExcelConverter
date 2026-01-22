@@ -13,9 +13,14 @@ namespace ExcelConvertor
     /// 스키마 정보를 참조하여 엑셀 데이터를 바이너리 파일로 직렬화
     /// 각 필드는 [FieldId][Length][Value] 형식으로 저장
     /// </summary>
-    internal class BinarySerializer(IEncryptionKeyProvider provider)
+    internal class BinarySerializer
     {
-        private readonly IEncryptionKeyProvider _keyProvider = provider;
+        private readonly IEncryptionKeyProvider _keyProvider;
+
+        BinarySerializer(IEncryptionKeyProvider provider)
+        {
+            _keyProvider = provider;
+        }
 
         /// <summary>
         /// 스트링 테이블을 바이너리로 저장..

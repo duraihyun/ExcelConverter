@@ -1,6 +1,5 @@
 ﻿using Scriban;
 
-using System.Collections.Generic;
 using System.IO;
 
 namespace ExcelConvertor.CodeGen

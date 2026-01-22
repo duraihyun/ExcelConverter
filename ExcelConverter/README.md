@@ -2,7 +2,7 @@
 - `Excel 시트 1개 = 테이블 1개 = Schema.json 1개`
 - 시트 이름에 `_Desc` 접미사가 붙은 시트는 설명용 시트로 간주하고 변환에서 제외
 - 데이터 컬럼명이 Note인 컬럼은 설명용 컬럼으로 간주하고 변환에서 제외
- - 데이터 타입
+- 데이터 타입
   - 기본 타입: int, float, double, string, bool, byte, short
   - 열거형: enum (자동 생성 코드에서 enum 타입으로 변환)
 
@@ -10,13 +10,14 @@
 ## 전체 구조
 ```
 SVN
+ ├─ Schema
+ │    ├─ Item.schema.json
+ │    └─ Skill.schema.json
  └─ Excel
       ├─ Item.xlsx
-      │    ├─ ItemSheet
-      │    └─ Item.schema.json
+      │    └─ ItemSheet
       ├─ Skill.xlsx
-      │    ├─ SkillSheet
-      │    └─ Skill.schema.json
+      │    └─ SkillSheet
 Jenkins
  └─ Convert → Schema.json, code, Binary, Manifest.json
 Cloud
@@ -80,7 +81,6 @@ Cloud
 |                |   |      |   | MAX       | 6 |         |   |            |   |   |          |
 | | | | | | | | | | | | |
 | Enum_StealableType |   |   |   |
-|-------------------|---|---|---|
 | None              | 0 |   |   |
 | TV                | 1 | 텔레비전 |   |
 
@@ -100,15 +100,16 @@ DOD(Data-Oriented Design) 관점에서 설계됨
 - Length: 데이터 길이 (int, 4 bytes)
 - Value: raw bytes
 
-** 순서 기반 바이너리는 구조 변경에 취약
-** 모르는 필드 아이디 -> 스킵
+** 순서 기반 바이너리는 구조 변경에 취약  
+** 모르는 필드 아이디 -> 스킵  
 ** 누락 필드 -> 디폴트
 
 ---
 
 ## 역할
 1. 중간 파일인 schema.json 파일 생성
-	- 사람이 읽을 수 있는 형태
+	- 계약서 역활로 Dev 서비스 그룹에서만 생성 및 수정된다.
+    - 사람이 읽을 수 있는 형태
 	- 오류 검증
 	- 코드 생성에 사용
 2. 바이너리 파일 생성
@@ -163,10 +164,10 @@ Manifest.json
 
 
 ## 자동 생성 코드 샘플
-Data.Enum.cs // 자동 생성된 모든 열거형 포함
-DataTable.cs // {Schema.Table}Data 클래스, {Schema.Table}DataTable 클래스 포함, {Schema.Table}DataTableLoader 클래스 포함
-DataTableManager.cs // EncryptionKeyProvider, StringTable, TableManager 클래스 부분 포함
-DataTableManager.Client.cs // 클라 전용 TableManager 부분 포함 (로드 코드)
+Data.Enum.cs // 자동 생성된 모든 열거형 포함  
+DataTable.cs // {Schema.Table}Data 클래스, {Schema.Table}DataTable 클래스 포함, {Schema.Table}DataTableLoader 클래스 포함  
+DataTableManager.cs // EncryptionKeyProvider, StringTable, TableManager 클래스 부분 포함  
+DataTableManager.Client.cs // 클라 전용 TableManager 부분 포함 (로드 코드)  
 DataTableManager.Server.cs // 서버 전용 TableManager 부분 포함 (로드 코드)
 
 ### Data.Enum.cs

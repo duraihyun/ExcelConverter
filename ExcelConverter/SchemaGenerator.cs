@@ -97,7 +97,7 @@ namespace ExcelConvertor
         }
 
 
-        public SchemaGenerationResult Update(string outputPath, bool fouce)
+        public SchemaGenerationResult Update(string outputPath, Options opts)
         {
             // 기존 스키마 파일 로드
             string jsonString = File.ReadAllText(outputPath);
@@ -105,7 +105,7 @@ namespace ExcelConvertor
             var originSchema = JsonSerializer.Deserialize<SchemaTemplate>(jsonString);
 
             // 원본 스키마와 현재 스키마 비교 및 조정
-            return ReconcileSchemas(Sheet!, originSchema!, CurrentSchema!, SkipColumns, StartColumnIndex, fouce);
+            return ReconcileSchemas(Sheet!, originSchema!, CurrentSchema!, SkipColumns, StartColumnIndex, opts.IsReadOnly, opts.ForceFieldTypeOverwrite);
         }
 
 
@@ -160,12 +160,14 @@ namespace ExcelConvertor
         /// <param name="newSchema">새 스키마</param>
         /// <param name="forceFieldTypeOverwrite">필드 타입 변경을 강제로 적용한다. 주의: 배포 이후에는 절대 덮어쓰면 안된다.</param>
         /// <returns></returns>
-        private static SchemaGenerationResult ReconcileSchemas(ISheet sheet, SchemaTemplate existingSchema, SchemaTemplate newSchema, HashSet<int> skips, int startColumIndex, bool forceFieldTypeOverwrite = false)
+        private static SchemaGenerationResult ReconcileSchemas(ISheet sheet, SchemaTemplate existingSchema, SchemaTemplate newSchema, HashSet<int> skips, int startColumIndex, bool isReadOnly, bool forceFieldTypeOverwrite = false)
         {
             bool hasError = false;
             bool hasUpdate = false;
             var updatedSchema = existingSchema.Clone();
             var log = new List<string>();
+
+            // 읽기 전용인 경우에도 엑셀을 파싱할 수 있도록 컬럼 인덱스를 동기화해야한다. (json 저장만 안함)
 
             if (updatedSchema.Target != newSchema.Target)
             {
@@ -240,7 +242,7 @@ namespace ExcelConvertor
                 }
             }
 
-            if (hasUpdate)
+            if (hasUpdate && !isReadOnly)
             {
                 updatedSchema.Version += 1;
                 log.Add($"[Info] Schema version updated to {updatedSchema.Version}");
@@ -250,7 +252,7 @@ namespace ExcelConvertor
             {
                 Sheet = sheet,
                 CurrentSchema = updatedSchema,
-                Action = hasUpdate ? ActionType.Update : ActionType.None,
+                Action = hasUpdate && !isReadOnly ? ActionType.Update : ActionType.None,
                 History = log,
                 SkipColumns = skips,
                 StartColumIndex = startColumIndex,
